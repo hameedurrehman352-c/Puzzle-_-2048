@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <meta name="theme-color" content="#faf8ef">
-  <meta name="description" content="A fun and challenging 2048 puzzle game">
+
+  <meta name="description"
+        content="A fun and challenging 2048 puzzle game.">
+
   <link rel="manifest" href="./manifest.webmanifest">
+
   <title>2048</title>
 
   <style>
@@ -24,22 +31,22 @@
       justify-content: center;
     }
 
-    .game {
+    .container {
       width: 100%;
-      max-width: 650px;
+      max-width: 500px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     h1 {
-      font-size: 80px;
+      font-size: 70px;
       margin: 0;
-      line-height: 1;
+      color: #776e65;
     }
 
     .scores {
@@ -50,10 +57,10 @@
     .score-box {
       background: #bbada0;
       color: white;
-      padding: 12px 20px;
-      border-radius: 6px;
+      padding: 10px 15px;
+      border-radius: 7px;
       text-align: center;
-      font-weight: bold;
+      min-width: 80px;
     }
 
     .score-title {
@@ -62,312 +69,490 @@
 
     .score {
       font-size: 24px;
+      font-weight: bold;
     }
 
     .subtitle {
-      font-size: 24px;
+      font-size: 18px;
       font-weight: bold;
-      margin-bottom: 20px;
+      margin: 5px 0 20px;
     }
 
     button {
       border: 0;
       background: #8f7a66;
       color: white;
-      padding: 15px 25px;
-      border-radius: 6px;
-      font-size: 18px;
+      padding: 14px 22px;
+      border-radius: 7px;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
-    .board {
+    .game-board {
+      width: 100%;
+      aspect-ratio: 1 / 1;
       background: #bbada0;
-      padding: 10px;
       border-radius: 12px;
+      padding: 10px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      width: 100%;
-      aspect-ratio: 1;
     }
 
-    .cell {
-      background: #cdc1b4;
-      border-radius: 8px;
+    .tile {
+      background: rgba(238, 228, 218, 0.35);
+      border-radius: 9px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: clamp(28px, 8vw, 55px);
+      align-items: center;
+      font-size: clamp(25px, 8vw, 45px);
       font-weight: bold;
       color: #776e65;
+      user-select: none;
     }
 
-    .tile-2 {
+    .tile[data-value="2"] {
       background: #eee4da;
     }
 
-    .tile-4 {
+    .tile[data-value="4"] {
       background: #ede0c8;
     }
 
-    .tile-8 {
+    .tile[data-value="8"] {
       background: #f2b179;
       color: white;
     }
 
-    .tile-16 {
+    .tile[data-value="16"] {
       background: #f59563;
       color: white;
     }
 
-    .tile-32 {
+    .tile[data-value="32"] {
       background: #f67c5f;
       color: white;
     }
 
-    .tile-64 {
+    .tile[data-value="64"] {
       background: #f65e3b;
       color: white;
     }
 
-    .tile-128 {
+    .tile[data-value="128"] {
       background: #edcf72;
       color: white;
-      font-size: clamp(24px, 7vw, 45px);
+      font-size: clamp(22px, 7vw, 40px);
     }
 
-    .tile-256,
-    .tile-512,
-    .tile-1024,
-    .tile-2048 {
+    .tile[data-value="256"] {
+      background: #edcc61;
+      color: white;
+      font-size: clamp(22px, 7vw, 40px);
+    }
+
+    .tile[data-value="512"] {
+      background: #edc850;
+      color: white;
+      font-size: clamp(22px, 7vw, 40px);
+    }
+
+    .tile[data-value="1024"],
+    .tile[data-value="2048"] {
       background: #edc53f;
       color: white;
-      font-size: clamp(20px, 6vw, 40px);
+      font-size: clamp(20px, 6vw, 36px);
+    }
+
+    .message {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+      min-height: 30px;
     }
 
     .instructions {
       text-align: center;
-      font-size: 20px;
       margin-top: 25px;
+      font-size: 17px;
+      color: #776e65;
     }
   </style>
 </head>
 
 <body>
 
-<div class="game">
+  <div class="container">
 
-  <header>
-    <h1>2048</h1>
+    <header>
+      <h1>2048</h1>
 
-    <div class="scores">
-      <div class="score-box">
-        <div class="score-title">SCORE</div>
-        <div id="score" class="score">0</div>
+      <div class="scores">
+        <div class="score-box">
+          <div class="score-title">SCORE</div>
+          <div id="score" class="score">0</div>
+        </div>
+
+        <div class="score-box">
+          <div class="score-title">BEST</div>
+          <div id="best" class="score">0</div>
+        </div>
       </div>
+    </header>
 
-      <div class="score-box">
-        <div class="score-title">BEST</div>
-        <div id="best" class="score">0</div>
-      </div>
+    <div class="subtitle">
+      Join the numbers and reach 2048!
     </div>
-  </header>
 
-  <div class="subtitle">
-    Join the numbers and reach 2048!
+    <button id="newGame">
+      New Game
+    </button>
+
+    <div id="board" class="game-board"></div>
+
+    <div id="message" class="message"></div>
+
+    <div class="instructions">
+      Swipe up, down, left or right to play.
+    </div>
+
   </div>
 
-  <button onclick="newGame()">New Game</button>
+  <script>
+    const boardElement = document.getElementById("board");
+    const scoreElement = document.getElementById("score");
+    const bestElement = document.getElementById("best");
+    const messageElement = document.getElementById("message");
+    const newGameButton = document.getElementById("newGame");
 
-  <div id="board" class="board"></div>
+    let board = [];
+    let score = 0;
 
-  <div class="instructions">
-    Swipe up, down, left or right to play.
-  </div>
+    let best = Number(localStorage.getItem("2048-best") || 0);
+    bestElement.textContent = best;
 
-</div>
-
-<script>
-  let board = [];
-  let score = 0;
-  let best = Number(localStorage.getItem("best2048") || 0);
-
-  const boardElement = document.getElementById("board");
-  const scoreElement = document.getElementById("score");
-  const bestElement = document.getElementById("best");
-
-  bestElement.textContent = best;
-
-  function newGame() {
-    board = Array.from({ length: 4 }, () => Array(4).fill(0));
-    score = 0;
-
-    addRandomTile();
-    addRandomTile();
-
-    updateBoard();
-  }
-
-  function addRandomTile() {
-    const empty = [];
-
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        if (board[r][c] === 0) {
-          empty.push([r, c]);
-        }
-      }
+    function createEmptyBoard() {
+      return [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ];
     }
 
-    if (empty.length === 0) return;
+    function startGame() {
+      board = createEmptyBoard();
+      score = 0;
+      messageElement.textContent = "";
 
-    const [r, c] = empty[Math.floor(Math.random() * empty.length)];
-    board[r][c] = Math.random() < 0.9 ? 2 : 4;
-  }
-
-  function updateBoard() {
-    boardElement.innerHTML = "";
-
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        const cell = document.createElement("div");
-        const value = board[r][c];
-
-        cell.className = "cell";
-
-        if (value > 0) {
-          cell.textContent = value;
-          cell.classList.add("tile-" + value);
-        }
-
-        boardElement.appendChild(cell);
-      }
-    }
-
-    scoreElement.textContent = score;
-
-    if (score > best) {
-      best = score;
-      localStorage.setItem("best2048", best);
-      bestElement.textContent = best;
-    }
-  }
-
-  function move(direction) {
-    let oldBoard = JSON.stringify(board);
-
-    if (direction === "left") {
-      for (let r = 0; r < 4; r++) {
-        board[r] = slide(board[r]);
-      }
-    }
-
-    if (direction === "right") {
-      for (let r = 0; r < 4; r++) {
-        board[r] = slide(board[r].slice().reverse()).reverse();
-      }
-    }
-
-    if (direction === "up") {
-      for (let c = 0; c < 4; c++) {
-        let column = [];
-
-        for (let r = 0; r < 4; r++) {
-          column.push(board[r][c]);
-        }
-
-        column = slide(column);
-
-        for (let r = 0; r < 4; r++) {
-          board[r][c] = column[r];
-        }
-      }
-    }
-
-    if (direction === "down") {
-      for (let c = 0; c < 4; c++) {
-        let column = [];
-
-        for (let r = 0; r < 4; r++) {
-          column.push(board[r][c]);
-        }
-
-        column = slide(column.reverse()).reverse();
-
-        for (let r = 0; r < 4; r++) {
-          board[r][c] = column[r];
-        }
-      }
-    }
-
-    if (JSON.stringify(board) !== oldBoard) {
       addRandomTile();
-      updateBoard();
+      addRandomTile();
+
+      updateDisplay();
     }
-  }
 
-  function slide(line) {
-    line = line.filter(value => value !== 0);
+    function addRandomTile() {
+      const empty = [];
 
-    for (let i = 0; i < line.length - 1; i++) {
-      if (line[i] === line[i + 1]) {
-        line[i] *= 2;
-        score += line[i];
-        line.splice(i + 1, 1);
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (board[r][c] === 0) {
+            empty.push([r, c]);
+          }
+        }
+      }
+
+      if (empty.length === 0) return;
+
+      const position =
+        empty[Math.floor(Math.random() * empty.length)];
+
+      board[position[0]][position[1]] =
+        Math.random() < 0.9 ? 2 : 4;
+    }
+
+    function updateDisplay() {
+      boardElement.innerHTML = "";
+
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+
+          const tile = document.createElement("div");
+          tile.className = "tile";
+
+          const value = board[r][c];
+
+          if (value !== 0) {
+            tile.textContent = value;
+            tile.dataset.value = value;
+          }
+
+          boardElement.appendChild(tile);
+        }
+      }
+
+      scoreElement.textContent = score;
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem("2048-best", best);
+        bestElement.textContent = best;
       }
     }
 
-    while (line.length < 4) {
-      line.push(0);
+    function slide(row) {
+      let numbers = row.filter(value => value !== 0);
+
+      for (let i = 0; i < numbers.length - 1; i++) {
+        if (numbers[i] === numbers[i + 1]) {
+          numbers[i] *= 2;
+          score += numbers[i];
+          numbers[i + 1] = 0;
+        }
+      }
+
+      numbers = numbers.filter(value => value !== 0);
+
+      while (numbers.length < 4) {
+        numbers.push(0);
+      }
+
+      return numbers;
     }
 
-    return line;
-  }
+    function moveLeft() {
+      let changed = false;
 
-  document.addEventListener("keydown", function(event) {
-    if (event.key === "ArrowLeft") move("left");
-    if (event.key === "ArrowRight") move("right");
-    if (event.key === "ArrowUp") move("up");
-    if (event.key === "ArrowDown") move("down");
-  });
+      for (let r = 0; r < 4; r++) {
+        const old = [...board[r]];
+        board[r] = slide(board[r]);
 
-  let startX = 0;
-  let startY = 0;
+        if (old.join(",") !== board[r].join(",")) {
+          changed = true;
+        }
+      }
 
-  document.addEventListener("touchstart", function(event) {
-    startX = event.touches[0].clientX;
-    startY = event.touches[0].clientY;
-  }, { passive: true });
-
-  document.addEventListener("touchend", function(event) {
-    const endX = event.changedTouches[0].clientX;
-    const endY = event.changedTouches[0].clientY;
-
-    const dx = endX - startX;
-    const dy = endY - startY;
-
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-      move(dx > 0 ? "right" : "left");
-    } else {
-      move(dy > 0 ? "down" : "up");
+      return changed;
     }
-  }, { passive: true });
 
-  newGame();
+    function moveRight() {
+      let changed = false;
 
-  // Register the Service Worker
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(error => console.log("Service Worker error:", error));
+      for (let r = 0; r < 4; r++) {
+        const old = [...board[r]];
+
+        board[r] = slide([...board[r]].reverse()).reverse();
+
+        if (old.join(",") !== board[r].join(",")) {
+          changed = true;
+        }
+      }
+
+      return changed;
+    }
+
+    function moveUp() {
+      let changed = false;
+
+      for (let c = 0; c < 4; c++) {
+        const column = [
+          board[0][c],
+          board[1][c],
+          board[2][c],
+          board[3][c]
+        ];
+
+        const newColumn = slide(column);
+
+        for (let r = 0; r < 4; r++) {
+          if (board[r][c] !== newColumn[r]) {
+            changed = true;
+          }
+
+          board[r][c] = newColumn[r];
+        }
+      }
+
+      return changed;
+    }
+
+    function moveDown() {
+      let changed = false;
+
+      for (let c = 0; c < 4; c++) {
+        const column = [
+          board[0][c],
+          board[1][c],
+          board[2][c],
+          board[3][c]
+        ];
+
+        const newColumn =
+          slide(column.reverse()).reverse();
+
+        for (let r = 0; r < 4; r++) {
+          if (board[r][c] !== newColumn[r]) {
+            changed = true;
+          }
+
+          board[r][c] = newColumn[r];
+        }
+      }
+
+      return changed;
+    }
+
+    function canMove() {
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+
+          if (board[r][c] === 0) {
+            return true;
+          }
+
+          if (
+            c < 3 &&
+            board[r][c] === board[r][c + 1]
+          ) {
+            return true;
+          }
+
+          if (
+            r < 3 &&
+            board[r][c] === board[r + 1][c]
+          ) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    function handleMove(direction) {
+      let changed = false;
+
+      if (direction === "left") {
+        changed = moveLeft();
+      }
+
+      if (direction === "right") {
+        changed = moveRight();
+      }
+
+      if (direction === "up") {
+        changed = moveUp();
+      }
+
+      if (direction === "down") {
+        changed = moveDown();
+      }
+
+      if (!changed) return;
+
+      addRandomTile();
+      updateDisplay();
+
+      if (board.flat().includes(2048)) {
+        messageElement.textContent = "🎉 You reached 2048!";
+      } else if (!canMove()) {
+        messageElement.textContent = "Game Over!";
+      }
+    }
+
+    document.addEventListener("keydown", event => {
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        handleMove("left");
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        handleMove("right");
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        handleMove("up");
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        handleMove("down");
+      }
     });
-  }
-</script>
+
+    let startX = 0;
+    let startY = 0;
+
+    boardElement.addEventListener(
+      "touchstart",
+      event => {
+        const touch = event.changedTouches[0];
+
+        startX = touch.clientX;
+        startY = touch.clientY;
+      },
+      { passive: true }
+    );
+
+    boardElement.addEventListener(
+      "touchend",
+      event => {
+
+        const touch = event.changedTouches[0];
+
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+
+        const minSwipe = 30;
+
+        if (
+          Math.abs(dx) < minSwipe &&
+          Math.abs(dy) < minSwipe
+        ) {
+          return;
+        }
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          handleMove(dx > 0 ? "right" : "left");
+        } else {
+          handleMove(dy > 0 ? "down" : "up");
+        }
+      },
+      { passive: true }
+    );
+
+    newGameButton.addEventListener(
+      "click",
+      startGame
+    );
+
+    startGame();
+
+    /* PWA SERVICE WORKER */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .then(() => {
+            console.log("Service Worker registered");
+          })
+          .catch(error => {
+            console.error(
+              "Service Worker error:",
+              error
+            );
+          });
+
+      });
+    }
+  </script>
 
 </body>
-      </html>
+</html>
